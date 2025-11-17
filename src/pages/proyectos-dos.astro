@@ -1,11 +1,9 @@
 ---
-// src/pages/proyectos-dos.astro
+
 import NavBar from '../components/NavBar.astro';
-// Ya NO importamos el componente ListadoProyectos porque lo vamos a borrar
 import { loadProyectos } from '../lib/services/proyecto-data'; 
 import type { Proyecto } from '../lib/interface/proyecto'; 
 
-// Carga inicial (para que no se vea vacío al principio si hay datos)
 const proyectosIniciales = loadProyectos();
 ---
 

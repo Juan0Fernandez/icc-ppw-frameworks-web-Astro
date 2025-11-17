@@ -1,16 +1,11 @@
 ---
-// Adaptación del listado-proyect.ts (inputs)
-// Importamos la interfaz para asegurar la tipificación de las props
-import type { Proyecto } from '../lib/interface/proyecto'; 
-// NOTA: La ruta se corrigió a '../lib/interface/proyecto' basado en tu estructura final.
 
-// Definimos las propiedades (inputs) que este componente espera recibir.
+import type { Proyecto } from '../lib/interface/proyecto'; 
 interface Props {
-    listaName: string; // Equivalente a listaName = input.required<string>();
-    proyectosList: Proyecto[]; // Equivalente a proyectosList = input.required<Proyecto[]>();
+    listaName: string; 
+    proyectosList: Proyecto[]; 
 }
 
-// Desestructuramos las props para usarlas en el HTML
 const { listaName, proyectosList } = Astro.props;
 ---
 

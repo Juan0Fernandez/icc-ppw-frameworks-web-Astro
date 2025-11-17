@@ -1,5 +1,5 @@
 ---
-// src/pages/proyectos.astro
+
 import NavBar from '../components/NavBar.astro';
 import { loadProyectos } from '../lib/services/proyecto-data';
 import type { Proyecto } from '../lib/interface/proyecto'; 
@@ -64,8 +64,6 @@ const proyectosIniciales = loadProyectos();
             if (listaArriba) listaArriba.innerHTML = '';
             if (listaAbajo) listaAbajo.innerHTML = '';
 
-            // Creamos el contenido HTML para los items
-            // Usamos map y join para crear un string de HTML eficiente
             const htmlItems = projectsToHTML(proyectos);
 
             // Inyectamos el mismo HTML en los dos lugares

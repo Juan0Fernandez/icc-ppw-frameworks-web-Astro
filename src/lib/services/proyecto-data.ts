@@ -16,7 +16,6 @@ function saveProyectos(proyectos: Proyecto[]) {
 
 // Cargar proyectos
 export function loadProyectos(): Proyecto[] {
-    // Si es el servidor (build time), devolvemos default
     if (typeof localStorage === 'undefined') { 
          return DEFAULT_PROYECTOS;
     }
@@ -42,13 +41,6 @@ export function addProyecto(nuevoProyecto: Proyecto): Proyecto[] {
     return updatedProyectos;
 }
 
-// --- NUEVA FUNCIÓN: Eliminar por ID ---
-export function deleteProyecto(id: number): Proyecto[] {
-    const currentProyectos = loadProyectos();
-    const updatedProyectos = currentProyectos.filter(p => p.id !== id);
-    saveProyectos(updatedProyectos);
-    return updatedProyectos;
-}
 export function removeFirstProyecto(): Proyecto[] {
     const currentProyectos = loadProyectos();
     

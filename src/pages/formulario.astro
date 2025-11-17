@@ -95,7 +95,7 @@ import NavBar from '../components/NavBar.astro';
             const control = formControls[fieldName];
             for (const validator of control.validators) {
                 const error = validator(control.value);
-                if (error) return error; // Retorna el objeto de error (ej: { required: true })
+                if (error) return error;
             }
             return null;
         }
@@ -111,11 +111,11 @@ import NavBar from '../components/NavBar.astro';
             const show = FormUtils.isValidField(errors, control.touched);
 
             if (show) {
-                
+
                 display.textContent = FormUtils.getFieldError(errors);
                 display.style.display = 'block';
                 display.style.color = '#dc3545'; 
-                input.classList.add('is-invalid'); // Clase error Bootstrap
+                input.classList.add('is-invalid'); 
             } else {
                 display.style.display = 'none';
                 input.classList.remove('is-invalid');
@@ -124,13 +124,10 @@ import NavBar from '../components/NavBar.astro';
 
         // 7. EVENT LISTENERS (Conectar inputs con el estado)
         Object.keys(inputs).forEach(key => {
-            // Al escribir (input)
+            
             inputs[key].addEventListener('input', (e) => {
-                // Actualizamos valor en el estado
                 formControls[key].value = key === 'edad' ? (parseInt(e.target.value) || 0) : e.target.value;
-                // Marcamos como 'touched' (tocado)
                 formControls[key].touched = true;
-                // Renderizamos si hay error
                 renderErrors(key);
             });
 
@@ -149,7 +146,7 @@ import NavBar from '../components/NavBar.astro';
 
             // Validar todos los campos antes de enviar
             Object.keys(formControls).forEach(key => {
-                formControls[key].touched = true; // Forzamos 'touched' para mostrar errores
+                formControls[key].touched = true; 
                 renderErrors(key);
                 if (getControlErrors(key)) isFormValid = false;
             });

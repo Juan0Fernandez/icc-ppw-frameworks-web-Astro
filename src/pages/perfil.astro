@@ -1,0 +1,45 @@
+---
+// Código de Astro (Se ejecuta en el servidor)
+import NavBar from '../components/NavBar.astro';
+
+const nombre = "Juan Fernández";
+const titulo = "Estudiante de computacion ";
+const ciudad = "Cuenca, Azuay, Ecuador";
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil | Astro</title>
+</head>
+<body>
+    <NavBar />
+
+    <main style="padding: 20px;">
+        <h1>Mi Perfil</h1>
+
+        <section class="perfil-card">
+            <h2>{nombre}</h2>
+            <p><strong>Título:</strong> {titulo}</p>
+            <p><strong>Ubicación:</strong> {ciudad}</p>
+            
+            <p>
+                Practica de astro implementando codigo similar al de angular
+                dado en clases
+            </p>
+        </section>
+    </main>
+
+    <style>
+        .perfil-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+    </style>
+</body>
+</html>

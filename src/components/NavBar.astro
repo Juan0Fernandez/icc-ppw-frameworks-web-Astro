@@ -1,0 +1,57 @@
+---
+const currentPath = Astro.url.pathname;
+
+const isActive = (path: string) => currentPath === path || (path === '/' && currentPath === '/index'); 
+---
+
+<nav>
+  <a
+    href="/"
+    class:list={[isActive('/') ? 'active' : '']}
+  >Home</a>
+
+  <a
+    href="/perfil"
+    class:list={[isActive('/perfil') ? 'active' : '']}
+  >Perfil</a>
+
+  <a
+    href="/proyectos"
+    class:list={[isActive('/proyectos') ? 'active' : '']}
+  >Proyectos</a>
+
+  <a
+    href="/proyectos-dos"
+    class:list={[isActive('/proyectos-dos') ? 'active' : '']}
+  >Proyectos Dos</a>
+  
+  <a
+    href="/formulario"
+    class:list={[isActive('/formulario') ? 'active' : '']}
+  >Formulario</a>
+</nav>
+
+<style>
+  nav {
+    background-color: #159;
+    padding: 1rem;
+    overflow: hidden;
+    display: flex; 
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+  a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block; 
+    padding: 0 0.5rem; 
+    transition: background-color 0.3s;
+  }
+  a.active {
+    color: yellow;
+    text-decoration: underline;
+    background-color: rgba(255, 255, 255, 0.2); 
+    border-radius: 5px;
+  }
+</style>

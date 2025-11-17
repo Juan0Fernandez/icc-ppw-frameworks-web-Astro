@@ -1,16 +1,88 @@
 ---
+// 1. FRONTMATTER (Código de Astro/Server)
+import NavBar from '../components/NavBar.astro';
 
+let initialCounter = 0;
+let initialSignalCounter = 0;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<!DOCTYPE html>
+<lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Contador Astro</title>
+</head>
+<body>
+    <NavBar />
+
+    <main style="padding: 20px;">
+        <h1>Home</h1>
+        <h2>Fundamentos</h2>
+        
+        <h1>Contador (Variable Normal): <span id="counter-normal">{initialCounter}</span></h1>
+        <h1>Contador (Signal): <span id="counter-signal">{initialSignalCounter}</span></h1>
+
+        <button id="btn-incrementar">Incrementar</button>
+        <button id="btn-decrementar">Decrementar</button>
+        <button id="btn-reset">Reset</button>
+    </main>
+
+    <!-- ¡CORREGIDO! type="module" asegura que el JS se ejecute correctamente -->
+    <script type="module"> 
+        
+        // Estado del Contador
+        let counter = {
+            normal: 0,
+            signal: 0
+        };
+
+        // Referencias a los elementos DOM
+        const normalDisplay = document.getElementById('counter-normal');
+        const signalDisplay = document.getElementById('counter-signal');
+        
+        const btnIncrementar = document.getElementById('btn-incrementar');
+        const btnDecrementar = document.getElementById('btn-decrementar');
+        const btnReset = document.getElementById('btn-reset');
+
+        // Función para actualizar el DOM 
+        function updateDOM() {
+            if (normalDisplay) normalDisplay.textContent = counter.normal.toString();
+            if (signalDisplay) signalDisplay.textContent = counter.signal.toString();
+        }
+
+        // Equivalente a changeValude(value)
+        function changeValue(value) {
+            counter.normal += value;
+            updateDOM(); 
+        }
+
+        // Equivalente a resetValue(value)
+        function resetValue(value) {
+            counter.normal = value;
+            counter.signal = value;
+            updateDOM(); 
+        }
+
+        // Equivalente a startAutomaticSignalIncrement()
+        function startAutomaticSignalIncrement() {
+            setInterval(() => {
+                counter.signal += 1; 
+                updateDOM(); 
+            }, 1000); 
+        }
+        
+        // 3. Event Listeners (equivalente a (click) en Angular)
+        if (btnIncrementar) btnIncrementar.addEventListener('click', () => changeValue(1));
+        if (btnDecrementar) btnDecrementar.addEventListener('click', () => changeValue(-1));
+        if (btnReset) btnReset.addEventListener('click', () => resetValue(0));
+
+        // 4. Inicialización (equivalente a ngOnInit)
+        startAutomaticSignalIncrement();
+
+        // 5. Renderizado inicial
+        updateDOM();
+    </script>
+</body>
 </html>
+ 

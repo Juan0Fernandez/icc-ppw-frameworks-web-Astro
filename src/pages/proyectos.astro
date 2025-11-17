@@ -1,0 +1,126 @@
+---
+// src/pages/proyectos.astro
+import NavBar from '../components/NavBar.astro';
+import { loadProyectos } from '../lib/services/proyecto-data';
+import type { Proyecto } from '../lib/interface/proyecto'; 
+
+// Carga inicial (aunque el JS se encargará de renderizar)
+const proyectosIniciales = loadProyectos();
+--- 
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos</title>
+</head>
+<body>
+    <NavBar />
+
+    <main style="padding: 20px;">
+        <h1>Proyectos</h1>
+
+        <h3 style="margin-top: 20px;">Agregar Proyecto</h3>
+        
+        <h4 style="font-size: 1rem; font-weight: bold; margin-bottom: 5px;">Proyecto a Agregar</h4>
+
+        <div style="display: flex; gap: 5px; align-items: center; margin-bottom: 20px;">
+            <input type="text" placeholder="Nombre del Proyecto" id="input-name" style="padding: 5px;">
+            <input type="text" placeholder="Descripción del Proyecto" id="input-description" style="padding: 5px;">
+            <button id="btn-agregar" style="padding: 5px 10px; cursor: pointer;">Agregar</button>
+        </div>
+
+        <h3 style="font-size: 1.2rem; font-weight: bold;">Listado</h3>
+        <ul id="lista-arriba" style="margin-bottom: 40px;">
+            </ul>
+
+        <h1 style="margin-top: 40px;">Listado de proyecto</h1>
+        <h3 style="font-size: 1.2rem; font-weight: bold;">Listado</h3>
+        <ul id="lista-abajo">
+            </ul>
+
+    </main>
+
+    <script>
+        import { loadProyectos, addProyecto } from '../lib/services/proyecto-data';
+        import type { Proyecto } from '../lib/interface/proyecto';
+
+        // Referencias DOM
+        const inputName = document.getElementById('input-name') as HTMLInputElement;
+        const inputDescription = document.getElementById('input-description') as HTMLInputElement;
+        const btnAgregar = document.getElementById('btn-agregar') as HTMLButtonElement;
+        
+        // REFERENCIAS A LAS DOS LISTAS
+        const listaArriba = document.getElementById('lista-arriba') as HTMLUListElement;
+        const listaAbajo = document.getElementById('lista-abajo') as HTMLUListElement;
+
+        // 1. Cargar datos
+        let proyectos: Proyecto[] = loadProyectos();
+
+        // 2. Función para renderizar (ACTUALIZA AMBAS LISTAS)
+        function renderProyectos() {
+            // Limpiamos ambas listas
+            if (listaArriba) listaArriba.innerHTML = '';
+            if (listaAbajo) listaAbajo.innerHTML = '';
+
+            // Creamos el contenido HTML para los items
+            // Usamos map y join para crear un string de HTML eficiente
+            const htmlItems = projectsToHTML(proyectos);
+
+            // Inyectamos el mismo HTML en los dos lugares
+            if (listaArriba) listaArriba.innerHTML = htmlItems;
+            if (listaAbajo) listaAbajo.innerHTML = htmlItems;
+        }
+
+        // Helper para crear el HTML de la lista
+        function projectsToHTML(lista: Proyecto[]) {
+            if (lista.length === 0) {
+                return '<li>No hay proyectos.</li>';
+            }
+            return lista.map(p => `
+                <li style="margin-bottom: 5px;">
+                    ${p.nombre} - ${p.descripcion}
+                </li>
+            `).join('');
+        }
+
+        // 3. Manejar Click Agregar
+        function handleAddProyecto() {
+            if (!inputName || !inputDescription) return;
+
+            const valName = inputName.value.trim();
+            const valDesc = inputDescription.value.trim();
+
+            if (!valName || !valDesc) {
+                alert("Por favor, llena ambos campos.");
+                return;
+            }
+
+            const newProyecto: Proyecto = {
+                id: Date.now(),
+                nombre: valName,
+                descripcion: valDesc,
+            };
+
+            // Guardar y actualizar variable local
+            proyectos = addProyecto(newProyecto);
+            
+            // Pintar de nuevo (en ambas listas)
+            renderProyectos();
+
+            // Limpiar inputs
+            inputName.value = '';
+            inputDescription.value = '';
+        }
+
+        // Event Listener
+        if (btnAgregar) {
+            btnAgregar.addEventListener('click', handleAddProyecto);
+        }
+
+        // Render inicial
+        renderProyectos();
+    </script>
+</body>
+</html>

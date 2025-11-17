@@ -1,0 +1,174 @@
+---
+// src/pages/formulario.astro
+import NavBar from '../components/NavBar.astro';
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario | Astro Modular</title>
+</head>
+<body>
+    <NavBar />
+
+    <main style="padding: 20px;">
+        <div class="row">
+            <div class="col" style="max-width: 500px;">
+                <form id="myForm" autocomplete="off"> 
+                
+                    <div class="mb-3">
+                        <label class="form-label" for="nombre">Nombre</label>
+                        <input type="text" class="form-control" placeholder="Nombre del Usuario" id="input-nombre">
+                        <p id="error-nombre" class="error-message"></p>
+                    </div>   
+
+                    <div class="mb-3">
+                        <label class="form-label" for="edad">Edad</label>
+                        <input type="number" class="form-control" placeholder="Edad del Usuario" id="input-edad">
+                        <p id="error-edad" class="error-message"></p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="correo">Correo</label>
+                        <input type="email" class="form-control" placeholder="Correo electrónico" id="input-correo">
+                        <p id="error-correo" class="error-message"></p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary float-end">Guardar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        // 1. IMPORTAR LA UTILIDAD (Ajusta la ruta según donde guardaste el archivo)
+        import { FormUtils } from '../utils/form-utils.js';
+
+        // 2. DEFINIR VALIDADORES (Estilo Angular: devuelven objetos, NO mensajes de texto)
+        const Validators = {
+            required: (val) => (val && val.toString().trim() !== '') ? null : { required: true },
+            email: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? null : { email: true },
+            minlength: (val, min) => (val && val.length >= min) ? null : { minlength: { requiredLength: min } },
+            min: (val, minVal) => (val >= minVal) ? null : { min: { min: minVal } }
+        };
+
+        // 3. CONFIGURACIÓN DEL FORMULARIO (Estado inicial)
+        const formControls = {
+            nombre: { 
+                value: '', 
+                touched: false, 
+                validators: [ v => Validators.required(v), v => Validators.minlength(v, 3) ] 
+            },
+            edad: { 
+                value: 0, 
+                touched: false, 
+                validators: [ v => Validators.required(v), v => Validators.min(v, 18) ] 
+            },
+            correo: { 
+                value: '', 
+                touched: false, 
+                validators: [ v => Validators.required(v), v => Validators.email(v) ] 
+            }
+        };
+
+        // 4. REFERENCIAS AL DOM
+        const form = document.getElementById('myForm');
+        const inputs = {
+            nombre: document.getElementById('input-nombre'),
+            edad: document.getElementById('input-edad'),
+            correo: document.getElementById('input-correo')
+        };
+        const errorDisplays = {
+            nombre: document.getElementById('error-nombre'),
+            edad: document.getElementById('error-edad'),
+            correo: document.getElementById('error-correo')
+        };
+
+        // 5. LÓGICA DE VALIDACIÓN (Calcula el error actual)
+        function getControlErrors(fieldName) {
+            const control = formControls[fieldName];
+            for (const validator of control.validators) {
+                const error = validator(control.value);
+                if (error) return error; // Retorna el objeto de error (ej: { required: true })
+            }
+            return null;
+        }
+
+        // 6. RENDERIZADO (Usa FormUtils para mostrar/ocultar errores)
+        function renderErrors(fieldName) {
+            const control = formControls[fieldName];
+            const errors = getControlErrors(fieldName);
+            const display = errorDisplays[fieldName];
+            const input = inputs[fieldName];
+
+            // USAMOS TU CLASE IMPORTADA AQUÍ:
+            const show = FormUtils.isValidField(errors, control.touched);
+
+            if (show) {
+                
+                display.textContent = FormUtils.getFieldError(errors);
+                display.style.display = 'block';
+                display.style.color = '#dc3545'; 
+                input.classList.add('is-invalid'); // Clase error Bootstrap
+            } else {
+                display.style.display = 'none';
+                input.classList.remove('is-invalid');
+            }
+        }
+
+        // 7. EVENT LISTENERS (Conectar inputs con el estado)
+        Object.keys(inputs).forEach(key => {
+            // Al escribir (input)
+            inputs[key].addEventListener('input', (e) => {
+                // Actualizamos valor en el estado
+                formControls[key].value = key === 'edad' ? (parseInt(e.target.value) || 0) : e.target.value;
+                // Marcamos como 'touched' (tocado)
+                formControls[key].touched = true;
+                // Renderizamos si hay error
+                renderErrors(key);
+            });
+
+            // Al salir del campo (blur)
+            inputs[key].addEventListener('blur', () => {
+                formControls[key].touched = true;
+                renderErrors(key);
+            });
+        });
+
+        // 8. ENVÍO DEL FORMULARIO
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            
+            let isFormValid = true;
+
+            // Validar todos los campos antes de enviar
+            Object.keys(formControls).forEach(key => {
+                formControls[key].touched = true; // Forzamos 'touched' para mostrar errores
+                renderErrors(key);
+                if (getControlErrors(key)) isFormValid = false;
+            });
+
+            if (!isFormValid) {
+                alert('El formulario contiene errores.');
+                return;
+            }
+
+            // Éxito
+            const payload = {
+                nombre: formControls.nombre.value,
+                edad: formControls.edad.value,
+                correo: formControls.correo.value
+            };
+            console.log('Enviando datos:', payload);
+            alert('¡Formulario válido! Datos enviados.');
+            
+        });
+    </script>
+</body>
+</html>

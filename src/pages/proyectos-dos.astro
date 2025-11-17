@@ -1,0 +1,122 @@
+---
+// src/pages/proyectos-dos.astro
+import NavBar from '../components/NavBar.astro';
+// Ya NO importamos el componente ListadoProyectos porque lo vamos a borrar
+import { loadProyectos } from '../lib/services/proyecto-data'; 
+import type { Proyecto } from '../lib/interface/proyecto'; 
+
+// Carga inicial (para que no se vea vacío al principio si hay datos)
+const proyectosIniciales = loadProyectos();
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos Dos</title>
+</head>
+<body>
+    <NavBar />
+
+    <main style="padding: 20px;">
+        <h1>Listado Proyectos desde Servicio</h1>
+
+        <h3 style="margin-top: 20px;">Listado</h3>
+        
+        <ul id="lista-proyectos" style="margin-bottom: 40px;">
+            </ul>
+
+        <h3>Agregar Proyecto</h3>
+        <h4 style="font-size: 1rem; font-weight: bold; margin-bottom: 10px;">Proyecto a Agregar</h4>
+
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <input type="text" placeholder="Nombre del Proyecto" id="input-name" style="padding: 5px;">
+            
+            <input type="text" placeholder="Descripción del Proyecto" id="input-description" style="padding: 5px;">
+            
+            <button id="btn-agregar" style="padding: 6px 15px; cursor: pointer;">Agregar</button>
+            
+            <button id="btn-eliminar" style="padding: 6px 15px; cursor: pointer; background-color: #dc3545; color: white; border: 1px solid #dc3545;">
+                Eliminar Primer Proyecto
+            </button>
+        </div>
+    </main>
+
+    <script>
+        import { loadProyectos, addProyecto, removeFirstProyecto } from '../lib/services/proyecto-data';
+        import type { Proyecto } from '../lib/interface/proyecto';
+
+        // Referencias DOM
+        const inputName = document.getElementById('input-name') as HTMLInputElement;
+        const inputDescription = document.getElementById('input-description') as HTMLInputElement;
+        const btnAgregar = document.getElementById('btn-agregar') as HTMLButtonElement;
+        const btnEliminar = document.getElementById('btn-eliminar') as HTMLButtonElement;
+        const listaProyectosUL = document.getElementById('lista-proyectos') as HTMLUListElement;
+
+        // 1. Cargar Estado
+        let proyectos: Proyecto[] = loadProyectos();
+
+        // 2. Función Render (Pinta la lista de ARRIBA)
+        function renderProyectos() {
+            if (!listaProyectosUL) return;
+            listaProyectosUL.innerHTML = '';
+
+            if (proyectos.length === 0) {
+                listaProyectosUL.innerHTML = '<li>No hay proyectos en la lista.</li>';
+                return;
+            }
+
+            proyectos.forEach(p => {
+                const li = document.createElement('li');
+                // Formato simple: viñeta con guión
+                li.textContent = `${p.nombre} - ${p.descripcion}`;
+                li.style.marginBottom = '5px';
+                listaProyectosUL.appendChild(li);
+            });
+        }
+
+        // 3. Manejar AGREGAR
+        function handleAddProyecto() {
+            if (!inputName || !inputDescription) return;
+            
+            const valName = inputName.value.trim();
+            const valDesc = inputDescription.value.trim();
+
+            if (!valName || !valDesc) {
+                alert("Por favor completa los campos");
+                return;
+            }
+
+            const newProyecto: Proyecto = {
+                id: Date.now(),
+                nombre: valName,
+                descripcion: valDesc,
+            };
+
+            proyectos = addProyecto(newProyecto);
+            renderProyectos();
+
+            inputName.value = '';
+            inputDescription.value = '';
+        }
+
+        // 4. Manejar ELIMINAR
+        function handleRemoveProyecto() {
+            if (proyectos.length === 0) {
+                alert("No hay proyectos para eliminar.");
+                return;
+            }
+            proyectos = removeFirstProyecto();
+            renderProyectos();
+        }
+
+        // Event Listeners
+        if (btnAgregar) btnAgregar.addEventListener('click', handleAddProyecto);
+        if (btnEliminar) btnEliminar.addEventListener('click', handleRemoveProyecto);
+
+        // Render inicial al cargar la página
+        renderProyectos();
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+---
+// Adaptación del listado-proyect.ts (inputs)
+// Importamos la interfaz para asegurar la tipificación de las props
+import type { Proyecto } from '../lib/interface/proyecto'; 
+// NOTA: La ruta se corrigió a '../lib/interface/proyecto' basado en tu estructura final.
+
+// Definimos las propiedades (inputs) que este componente espera recibir.
+interface Props {
+    listaName: string; // Equivalente a listaName = input.required<string>();
+    proyectosList: Proyecto[]; // Equivalente a proyectosList = input.required<Proyecto[]>();
+}
+
+// Desestructuramos las props para usarlas en el HTML
+const { listaName, proyectosList } = Astro.props;
+---
+
+<section>
+    <h2>{ listaName }</h2>
+    
+    <ul class="lista-proyectos">
+        {proyectosList.map((proyecto) => (
+            <li class="proyecto-item">
+                <strong>ID:</strong> {proyecto.id} <br>
+                <strong>Nombre:</strong> {proyecto.nombre} <br>
+                </li>
+        ))}
+    </ul>
+</section>
+
+<style>
+    .lista-proyectos {
+        list-style: none;
+        padding: 0;
+        margin-top: 10px;
+    }
+    .proyecto-item {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        font-size: 0.9rem;
+    }
+    .proyecto-item strong {
+        color: #3f51b5; /* Un color de énfasis */
+    }
+</style>
